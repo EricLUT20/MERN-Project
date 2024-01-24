@@ -12,11 +12,30 @@ code {
     monospace;
 }
 
-.navbar {
-  width: 100%;
-  background-color: #333;
-  color: #fff;
-  padding: 1rem;
-  box-sizing: border-box; /* Ensures padding and border are included in the width */
-  margin: 0; /* Reset margin to ensure full width */
+/* While Loading Page Spinner CSS */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* User matching box CSS */
+.round-box {
+  padding-bottom: 10%;
+  margin: auto;
+  border-radius: 10px;
+}
+
+/* Buttons for like and pass */
+.button-container {
+  padding-top: 10px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-container button {
+  border-radius: 10px;
 }

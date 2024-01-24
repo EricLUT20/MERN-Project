@@ -21,6 +21,18 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  likedUsers: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
+  },
+  passedUsers: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
+  },
+  title: {
+    type: String,
+    default: "",
+  },
   bio: {
     type: String,
     default: "",

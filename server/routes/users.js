@@ -4,6 +4,9 @@ var router = express.Router()
 // Importing validation tools for email and password
 const { body, validationResult } = require("express-validator")
 
+// ValidateToken middleware
+const ValidateToken = require("../auth/ValidateToken")
+
 // Importing dotenv to use .env for secret key
 require("dotenv").config()
 const SECRET = process.env.SECRET
@@ -17,6 +20,14 @@ const bcrypt = require("bcryptjs")
 const User = require("../models/User")
 
 /* POST routes */
+
+// Validate token
+router.post("/tokenValid", ValidateToken, async (req, res) => {
+  // return a success message if the token is valid
+  return res
+    .status(200)
+    .json({ success: true, id: req.user, message: "Token is valid" })
+})
 
 // Register user
 router.post("/register", async (req, res) => {
@@ -82,13 +93,11 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({ email: existingUser.email }, SECRET, {
           expiresIn: "1h", // How long do we want the token to be valid for, currently 1h
         })
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "Login successful",
-            token: "Bearer " + token,
-          })
+        return res.status(200).json({
+          success: true,
+          message: "Login successful",
+          token: "Bearer " + token,
+        })
       }
 
       // If user password is incorrect respond with false message
@@ -107,6 +116,61 @@ router.post("/login", async (req, res) => {
 })
 
 /* GET users listing. */
+
+// Getting a new user for the current user to decide on (like or pass)
+router.get("/newUser/:userId", ValidateToken, async function (req, res, next) {
+  const { userId } = req.params
+
+  try {
+    // Find the current user to get their liked and passed users
+    const currentUser = await User.findOne({ _id: userId })
+    const likedUsers = currentUser.likedUsers || []
+    const passedUsers = currentUser.passedUsers || []
+
+    // Find a new user that the current user hasn't liked or passed
+    const newUser = await User.findOne({
+      _id: { $nin: [userId, ...likedUsers, ...passedUsers] },
+    })
+
+    // Calculating the new user's age to display on the client
+    const currentDate = new Date()
+    const birthYear = new Date(newUser.birthdate).getFullYear()
+    const currentYear = new Date().getFullYear()
+    const newBirthYear = newUser.birthdate.setFullYear(currentYear)
+    let newUserAge = 0
+    // Checking if new user already had their birthday, if they did -1
+    if (currentDate < newBirthYear) {
+      newUserAge = currentYear - birthYear - 1
+    }
+    // If they didn't have their birthday continue normally
+    else {
+      newUserAge = currentYear - birthYear
+    }
+
+    // If found a user that hasn't been matched yet respond with the new user relevant details
+    if (newUser) {
+      res.json({
+        success: true,
+        newUser: {
+          _id: newUser._id,
+          name: newUser.name,
+          age: newUserAge,
+          title: newUser.title,
+          bio: newUser.bio,
+        },
+      })
+    }
+
+    // If no new user is found respond with a message
+    else {
+      res.json({ success: false, message: "No more users available" })
+    }
+  } catch (error) {
+    // If an error with finding users respond with an error message
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
 router.get("/", function (req, res, next) {
   res.send("respond with a resource")
 })

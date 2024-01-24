@@ -1,5 +1,5 @@
-/* PrivateRoutes 
-Making routes only authenticated users can access like "/", "/messages"
+/* PublicRoutes
+Making routes only unauthenticated users can access like "/login", "/register"
 */
 import React, { useState, useEffect } from "react"
 import { Outlet, Navigate } from "react-router-dom"
@@ -32,8 +32,8 @@ function PrivateRoutes({ jwt }) {
     )
   }
 
-  /* If not authenticated, redirect to login */
-  return jwt || isAuthenticatedValue ? <Outlet /> : <Navigate to="/login" />
+  /* If authenticated, redirect to home */
+  return jwt || isAuthenticatedValue ? <Navigate to="/" /> : <Outlet />
 }
 
 export default PrivateRoutes

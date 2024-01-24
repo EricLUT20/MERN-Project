@@ -1,19 +1,32 @@
+/* ValidateToken */
 const jwt = require("jsonwebtoken")
+const User = require("../models/User")
 
 module.exports = function (req, res, next) {
+  // Get token from header
   const authHeader = req.headers["authorization"]
-  console.log(authHeader)
+
+  // Initializing token
   let token
+
+  // Splitting header to get token
   if (authHeader) {
     token = authHeader.split(" ")[1]
   } else {
     token = null
   }
+
+  // Check if token is null
   if (token == null) return res.sendStatus(401)
+
+  // If token found
   console.log("Token found")
-  jwt.verify(token, process.env.SECRET, (err, user) => {
+
+  // Verify token
+  jwt.verify(token, process.env.SECRET, async (err, user) => {
     if (err) return res.sendStatus(403)
-    req.user = user
+    const currentUser = await User.findOne({ email: user.email })
+    req.user = currentUser._id
     next()
   })
 }

@@ -1,19 +1,15 @@
-/* Messages Schema for MongoDB database */
+/* Match Schema for MongoDB database */
 
 // Importing mongoose for database
 const mongoose = require("mongoose")
 
-// Creating MessageSchema with relevant fields
-const MessageSchema = new mongoose.Schema({
+// Creating MatchSchema with relevant fields
+const MatchSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  message: {
-    type: String,
-    required: true,
-  },
-  to: {
+  match: {
     type: String,
     required: true,
   },

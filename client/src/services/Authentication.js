@@ -1,24 +1,31 @@
-async function login(username, password) {
-  const response = await fetch("http://localhost:5000/users/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username,
-      password,
-    }),
-  })
-  return response.data
-}
+/* Authentication & Logging out Services */
 
+/* Logging out */
 function logout() {
-  localStorage.removeItem("token")
+  localStorage.removeItem("token") // Removing token from localstorage
 }
 
-function isAuthenticated() {
-  const token = localStorage.getItem("token")
-  return token !== null
+/* Checking if the token is valid or not using the /users/tokenValid POST route */
+async function isAuthenticated() {
+  try {
+    if (!localStorage.getItem("token")) {
+      // If no token in localstorage
+      return false
+    }
+    const res = await fetch("http://localhost:5000/users/tokenValid", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token"), // Sending token in headers
+      },
+    })
+    const data = await res.json() // Getting response from server
+    const userId = data.id // Getting the user's id
+    return userId // Returning the user's id so we can find him in the database
+  } catch (error) {
+    // If an error occurs return false so we can redirect to login
+    return false
+  }
 }
 
-export { login, logout, isAuthenticated }
+export { logout, isAuthenticated }
