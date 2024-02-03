@@ -199,6 +199,7 @@ function Messages() {
                   key={number}
                   className={`${number === currentPage ? "active" : ""}`}
                   onClick={() => setCurrentPage(number)}
+                  style={{ cursor: "pointer" }}
                 >
                   <a>{number}</a>
                 </li>

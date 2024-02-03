@@ -16,9 +16,12 @@ function Home() {
   const [loading, setLoading] = useState(true) // Storing the loading state to whether to display a loading spinner
   const [noUsers, setNoUsers] = useState(false) // Storing whether there are no new users to match with
 
-  const handleLike = async () => {
+  // Handling liking user
+  async function handleLike() {
     try {
-      console.log(user)
+      console.log(user) // Console logging the user to see if it is being passed correctly
+
+      /* Sending PUT request to update the database and add the user to the list of likedUsers */
       const res = await fetch(`http://localhost:5000/users/${user.id}/like`, {
         method: "PUT",
         headers: {
@@ -26,16 +29,30 @@ function Home() {
           Authorization: localStorage.getItem("token"), // Sending token in headers
         },
       })
+
+      // If response is not ok, reload and remove token
+      if (!res.ok) {
+        localStorage.removeItem("token")
+        window.location.reload()
+      }
+
+      // Getting response json
       const data = await res.json()
-      console.log(data)
-      loadUserId()
+
+      console.log(data) // Console logging the data to see if it is being passed correctly
+
+      loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
+
+      // If error occurs display error
     } catch (error) {
       console.error(error)
     }
   }
 
-  const handlePass = async () => {
+  /* Handling passing user */
+  async function handlePass() {
     try {
+      /* Sending PUT request to update the database and add the user to the list of passedUsers */
       const res = await fetch(`http://localhost:5000/users/${user.id}/pass`, {
         method: "PUT", // Using PUT request method to update the database
         headers: {
@@ -43,19 +60,28 @@ function Home() {
           Authorization: localStorage.getItem("token"), // Sending token in headers
         },
       })
+
+      // If response is not ok, reload and remove token
       if (!res.ok) {
+        localStorage.removeItem("token")
         window.location.reload()
       }
+
+      // Getting response json
       const data = await res.json()
-      console.log(data)
-      loadUserId()
+
+      console.log(data) // Console logging the data to see if it is being passed correctly
+
+      loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
+
+      // If error occurs display error
     } catch (error) {
       console.error(error)
     }
   }
 
   // Fetching with GET request to get new users data to display it for the current user to decide on (like or pass)
-  const loadUserId = async () => {
+  async function loadUserId() {
     try {
       setNoUsers(false)
 
@@ -68,6 +94,7 @@ function Home() {
         },
       })
 
+      // If response is not ok, reload and remove token
       if (!res.ok) {
         console.log("Something went wrong")
         localStorage.removeItem("token")
@@ -103,6 +130,7 @@ function Home() {
     loadUserId()
   }, []) // Making sure we run the useEffect only once otherwise it will keep reloading
 
+  // Handling swiping user feature to like or pass on matches by using swiping left or right using useSwipeable
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handlePass,
     onSwipedRight: handleLike,
