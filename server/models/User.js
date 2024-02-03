@@ -3,7 +3,11 @@
 // Importing mongoose for database
 const mongoose = require("mongoose")
 
-// Creating UserSchema with relevant fields
+/* Creating UserSchema with relevant fields
+name, email, password, birthdate, likedUsers, passedUsers, title, bio
+likedUsers and passedUsers are arrays for storing user's likes and passes
+Birthdate for getting user's age
+*/
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,

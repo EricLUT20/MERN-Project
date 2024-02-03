@@ -5,8 +5,8 @@ import { Link, useNavigate } from "react-router-dom"
 /* Materialize CSS */
 import "materialize-css/dist/css/materialize.min.css"
 
-const Login = ({ jwt, setJwt }) => {
-  /* Hooks */
+function Login() {
+  /* For redirecting user */
   const navigate = useNavigate()
 
   /* States 
@@ -18,13 +18,13 @@ const Login = ({ jwt, setJwt }) => {
   const [hideEmailPlaceholder, setHideEmailPlaceholder] = useState(false)
   const [hidePasswordPlaceholder, setHidePasswordPlaceholder] = useState(false)
 
-  /* updating email */
+  /* Updating changes in email */
   const handleEmailChange = (e) => {
     setEmail(e.target.value)
     setHideEmailPlaceholder(e.target.value.trim() !== "")
   }
 
-  /* updating password */
+  /* Updating changes in password */
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
     setHidePasswordPlaceholder(e.target.value.trim() !== "")
@@ -53,7 +53,6 @@ const Login = ({ jwt, setJwt }) => {
       .then((data) => {
         if (data.success) {
           localStorage.setItem("token", data.token) // Storing token in localstorage
-          setJwt(data.token)
           navigate("/") // Redirecting to index page
         } else {
           alert(data.message)
@@ -70,7 +69,7 @@ const Login = ({ jwt, setJwt }) => {
       {/* Login form */}
       <h4 className="center">Login</h4>
       <form className="col s12">
-        <div className="row">
+        <div className="row col s12">
           <div className="input-field col s12">
             {/* Email */}
             <input
@@ -108,7 +107,7 @@ const Login = ({ jwt, setJwt }) => {
           </div>
         </div>
         <div className="row">
-          {/* Login button */}
+          {/* Login button to submit form */}
           <button
             className="waves-effect waves-light btn"
             type="button"

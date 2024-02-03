@@ -1,40 +1,51 @@
 /* Register */
 import React, { useState } from "react"
+
+/* Importing react router dom */
 import { Link, useNavigate } from "react-router-dom"
 
-const Register = ({ jwt }) => {
+function Register() {
+  /* For redirecting users */
   const navigate = useNavigate()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [birthdate, setBirthdate] = useState("")
-  const [hideNamePlaceholder, setHideNamePlaceholder] = useState(false)
-  const [hideEmailPlaceholder, setHideEmailPlaceholder] = useState(false)
-  const [hidePasswordPlaceholder, setHidePasswordPlaceholder] = useState(false)
-  const [hideBirthdatePlaceholder, setHideBirthdatePlaceholder] =
-    useState(false)
 
+  /* States */
+  const [name, setName] = useState("") // Storing user's name
+  const [email, setEmail] = useState("") // Storing user's email
+  const [password, setPassword] = useState("") // Storing user's password
+  const [birthdate, setBirthdate] = useState("") // Storing user's birthdate
+  const [hideNamePlaceholder, setHideNamePlaceholder] = useState(false) // Storing user's name placeholder
+  const [hideEmailPlaceholder, setHideEmailPlaceholder] = useState(false) // Storing user's email placeholder
+  const [hidePasswordPlaceholder, setHidePasswordPlaceholder] = useState(false) // Storing user's password placeholder
+  const [hideBirthdatePlaceholder, setHideBirthdatePlaceholder] =
+    useState(false) // Storing user's birthdate placeholder
+
+  /* Updating changes user's name */
   const handleNameChange = (e) => {
     setName(e.target.value)
     setHideNamePlaceholder(e.target.value.trim() !== "")
   }
 
+  /* Updating changes user's email */
   const handleEmailChange = (e) => {
     setEmail(e.target.value)
     setHideEmailPlaceholder(e.target.value.trim() !== "")
   }
 
+  /* Updating changes user's password */
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
     setHidePasswordPlaceholder(e.target.value.trim() !== "")
   }
 
+  /* Updating changes user's birthdate */
   const handleBirthdateChange = (e) => {
     setBirthdate(e.target.value)
     setHideBirthdatePlaceholder(e.target.value.trim() !== "")
   }
 
+  /* Handling registeration of user */
   const handleRegister = () => {
+    // Sending POST request register user to server
     fetch("http://localhost:5000/users/register", {
       method: "POST",
       headers: {
@@ -49,9 +60,13 @@ const Register = ({ jwt }) => {
     })
       .then((res) => res.json())
       .then((data) => {
+        // If user is registered successfully redirect to login
         if (data.success) {
           navigate("/login")
-        } else {
+        }
+
+        // If user is not registered alert the user
+        else {
           alert(data.message)
         }
       })
@@ -59,11 +74,14 @@ const Register = ({ jwt }) => {
 
   return (
     <div className="container">
+      {/* Dating app title */}
       <h2 className="center">MERN Dating App</h2>
       <div className="divider" />
+      {/* Registeration form */}
       <h4 className="center">Register</h4>
       <form className="col s12">
         <div className="row">
+          {/* Input field for user's name */}
           <div className="input-field col s12">
             <input
               id="name"
@@ -81,6 +99,7 @@ const Register = ({ jwt }) => {
           </div>
         </div>
         <div className="row">
+          {/* Input field for user's email */}
           <div className="input-field col s12">
             <input
               id="email"
@@ -98,6 +117,7 @@ const Register = ({ jwt }) => {
           </div>
         </div>
         <div className="row">
+          {/* Input field for user's password */}
           <div className="input-field col s12">
             <input
               id="password"
@@ -115,6 +135,7 @@ const Register = ({ jwt }) => {
           </div>
         </div>
         <div className="row">
+          {/* Input field for user's birthdate */}
           <div className="input-field col s12">
             <input
               id="birthdate"
@@ -131,6 +152,7 @@ const Register = ({ jwt }) => {
             </label>
           </div>
         </div>
+        {/* Register button to send POST request to register the user */}
         <div className="row">
           <button
             className="waves-effect waves-light btn"
@@ -142,6 +164,7 @@ const Register = ({ jwt }) => {
         </div>
       </form>
       <div className="divider" />
+      {/* Link to login */}
       <h6 className="center">Already have an account?</h6>
       <Link
         to="/login"

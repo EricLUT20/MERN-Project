@@ -10,7 +10,7 @@ import { isAuthenticated } from "../services/Authentication"
 /* Importing a loading spinner */
 import { ClipLoader } from "react-spinners"
 
-function PrivateRoutes({ jwt }) {
+function PrivateRoutes() {
   /* States */
   const [isAuthenticatedValue, setIsAuthenticatedValue] = useState(null)
 
@@ -33,7 +33,7 @@ function PrivateRoutes({ jwt }) {
   }
 
   /* If authenticated, redirect to home */
-  return jwt || isAuthenticatedValue ? <Navigate to="/" /> : <Outlet />
+  return isAuthenticatedValue ? <Navigate to="/" /> : <Outlet />
 }
 
 export default PrivateRoutes

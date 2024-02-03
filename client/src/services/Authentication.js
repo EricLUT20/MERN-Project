@@ -24,6 +24,8 @@ async function isAuthenticated() {
     return userId // Returning the user's id so we can find him in the database
   } catch (error) {
     // If an error occurs return false so we can redirect to login
+    localStorage.removeItem("token")
+    console.log(error)
     return false
   }
 }

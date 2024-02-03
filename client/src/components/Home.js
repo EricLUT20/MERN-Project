@@ -4,24 +4,63 @@ import React, { useEffect, useState } from "react"
 /* My Components */
 import Header from "./Header"
 
-/* My services */
-import { isAuthenticated } from "../services/Authentication"
-
 /* Importing a loading spinner */
 import { ClipLoader } from "react-spinners"
 
-function Home({ jwt, setJwt }) {
-  const [user, setUser] = useState({})
-  const [loading, setLoading] = useState(true)
+/* Importing Swipeable for swiping feature to like or pass on matches */
+import { useSwipeable } from "react-swipeable"
+
+function Home() {
+  /* States */
+  const [user, setUser] = useState({}) // Storing the new user
+  const [loading, setLoading] = useState(true) // Storing the loading state to whether to display a loading spinner
+  const [noUsers, setNoUsers] = useState(false) // Storing whether there are no new users to match with
+
+  const handleLike = async () => {
+    try {
+      console.log(user)
+      const res = await fetch(`http://localhost:5000/users/${user.id}/like`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"), // Sending token in headers
+        },
+      })
+      const data = await res.json()
+      console.log(data)
+      loadUserId()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handlePass = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/users/${user.id}/pass`, {
+        method: "PUT", // Using PUT request method to update the database
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"), // Sending token in headers
+        },
+      })
+      if (!res.ok) {
+        window.location.reload()
+      }
+      const data = await res.json()
+      console.log(data)
+      loadUserId()
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   // Fetching with GET request to get new users data to display it for the current user to decide on (like or pass)
   const loadUserId = async () => {
     try {
-      // Check if the user is authenticated and getting userId
-      const userId = await isAuthenticated()
+      setNoUsers(false)
 
       // Fetching the newUser data so we can display it for the current user to decide on (like or pass)
-      const res = await fetch(`http://localhost:5000/users/newUser/${userId}`, {
+      const res = await fetch(`http://localhost:5000/users/newUser`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -29,22 +68,29 @@ function Home({ jwt, setJwt }) {
         },
       })
 
-      // Error handling
-      if (!res.ok) throw Error("Something went wrong")
+      if (!res.ok) {
+        console.log("Something went wrong")
+        localStorage.removeItem("token")
+        window.location.reload()
+      }
 
-      // Waiting for data to load
+      // Getting the response in JSON
       const data = await res.json()
 
-      // Setting the newUser with the data
-      const newUser = data.newUser || {}
-
-      // Setting the user state with the new user to match
-      setUser({
-        name: newUser.name || "",
-        age: newUser.age || "",
-        title: newUser.title || "",
-        bio: newUser.bio || "",
-      })
+      // If a new user is found, set the state
+      if (data.success) {
+        const newUser = data.newUser || {}
+        setUser({
+          id: newUser._id || "",
+          name: newUser.name || "",
+          age: newUser.age || "",
+          title: newUser.title || "",
+          bio: newUser.bio || "",
+        })
+      } else {
+        // If no new user is found, set the state to indicate that
+        setNoUsers(true)
+      }
 
       setLoading(false) // Setting loading to false so the spinner doesn't show and display the content
     } catch (error) {
@@ -57,8 +103,15 @@ function Home({ jwt, setJwt }) {
     loadUserId()
   }, []) // Making sure we run the useEffect only once otherwise it will keep reloading
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: handlePass,
+    onSwipedRight: handleLike,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  })
+
   return (
-    <div>
+    <div {...swipeHandlers}>
       {/* Getting Materialize Icons for the Buttons */}
       <link
         href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -70,6 +123,8 @@ function Home({ jwt, setJwt }) {
           <div className="spinner-container">
             <ClipLoader color="#36d7b7" />
           </div>
+        ) : noUsers ? (
+          <h3>You have already matched with everyone</h3>
         ) : (
           <div className="content-container">
             <div className="round-box z-depth-5 red lighten-5">
@@ -84,6 +139,7 @@ function Home({ jwt, setJwt }) {
               <button
                 className="btn waves-effect waves-light red lighten-2"
                 type="button"
+                onClick={handlePass}
               >
                 <i className="material-icons left">close</i>
                 Pass
@@ -94,6 +150,7 @@ function Home({ jwt, setJwt }) {
               <button
                 className="btn waves-effect waves-light green lighten-2"
                 type="button"
+                onClick={handleLike}
               >
                 <i className="material-icons left">favorite</i>
                 Like
