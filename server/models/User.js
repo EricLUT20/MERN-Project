@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  registered: {
+    type: Date,
+    default: Date.now,
+  },
 })
 
 // Exporting UserSchema to other components

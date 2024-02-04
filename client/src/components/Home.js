@@ -1,6 +1,9 @@
 /* Home */
 import React, { useEffect, useState } from "react"
 
+/* Importing Link from react-router-dom */
+import { Link } from "react-router-dom"
+
 /* My Components */
 import Header from "./Header"
 
@@ -15,6 +18,7 @@ function Home() {
   const [user, setUser] = useState({}) // Storing the new user
   const [loading, setLoading] = useState(true) // Storing the loading state to whether to display a loading spinner
   const [noUsers, setNoUsers] = useState(false) // Storing whether there are no new users to match with
+  const [swipeOffset, setSwipeOffset] = useState(0) // Storing Swipe Offset value to display the movement when swiping on round box
 
   // Handling liking user
   async function handleLike() {
@@ -132,6 +136,12 @@ function Home() {
 
   // Handling swiping user feature to like or pass on matches by using swiping left or right using useSwipeable
   const swipeHandlers = useSwipeable({
+    onSwiping: (e) => {
+      setSwipeOffset(e.deltaX)
+    },
+    onSwiped: () => {
+      setSwipeOffset(0)
+    },
     onSwipedLeft: handlePass,
     onSwipedRight: handleLike,
     preventDefaultTouchmoveEvent: true,
@@ -155,8 +165,16 @@ function Home() {
           <h3>You have already matched with everyone</h3>
         ) : (
           <div className="content-container">
-            <div className="round-box z-depth-5 red lighten-5">
-              <h3>{`${user.name}, ${user.age}`}</h3>
+            <div
+              className="round-box z-depth-5 red lighten-5"
+              style={{ transform: `translateX(${swipeOffset}px)` }}
+            >
+              <h3>
+                <Link
+                  className="link"
+                  to={`/user/${user.id}`}
+                >{`${user.name}, ${user.age}`}</Link>
+              </h3>
               <div className="divider red lighten-4" />
               <h5>{user.title}</h5>
               <p>{user.bio}</p>

@@ -101,6 +101,17 @@ code {
   min-width: 200px;
 }
 
+.link {
+  color: black;
+  transition: all 0.1s;
+}
+
+.link:hover {
+  color: #ee6e73;
+  font-size: 107%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 /* When width is under 500px */
 @media (max-width: 500px) {
   .navbar .nav-items {

@@ -306,6 +306,34 @@ router.get("/matches", ValidateToken, async function (req, res, next) {
   }
 })
 
+// Getting other user's profile
+router.get("/:id", ValidateToken, async function (req, res, next) {
+  try {
+    // Get the user from the database using the id from the ValidateToken middleware
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "User not found" })
+    }
+
+    // Respond with success and the user
+    res.json({
+      success: true,
+      user: {
+        name: user.name,
+        title: user.title,
+        bio: user.bio,
+        registered: user.registered,
+      },
+      message: "Profile fetched succesfully",
+    })
+
+    // If error occurs respond success false with an error message
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Something went wrong" })
+  }
+})
+
 /* GET route */
 router.get("/", function (req, res, next) {
   res.send("respond with a resource")
