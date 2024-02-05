@@ -108,8 +108,8 @@ code {
 
 .link:hover {
   color: #ee6e73;
-  font-size: 107%;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 105%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* When width is under 500px */

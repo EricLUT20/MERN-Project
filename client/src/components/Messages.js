@@ -1,6 +1,9 @@
 /* Messages */
 import React, { useEffect, useState, useRef } from "react"
 
+/* Importing useLocation from react-router-dom */
+import { useLocation } from "react-router-dom"
+
 /* My components Header */
 import Header from "../components/Header"
 
@@ -8,6 +11,9 @@ import Header from "../components/Header"
 import { ClipLoader } from "react-spinners"
 
 function Messages() {
+  // Initializing the useLocation to get the passed state
+  const location = useLocation()
+
   /* States */
   const [matchedUsers, setMatchedUsers] = useState([]) // State for Storing All of the matches
   const [selectedUser, setSelectedUser] = useState(null) // State for Storing Currently selected user
@@ -130,15 +136,21 @@ function Messages() {
 
   /* Load messages and matched users when the component mounts */
   useEffect(() => {
-    /* Load messages */
+    // If location state has a selected user, set it as the selected user
+    if (location.state?.selectedUser) {
+      setSelectedUser(location.state.selectedUser)
+      loadUserMessages(location.state.selectedUser._id) // Load messages for the selected user
+    }
+
+    // Load messages
     loadMatches()
 
-    /* Scrolling to bottom of messages when new message is sent */
+    // Scroll to the bottom of messages when a new message is sent
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight
     }
-  }, [messages])
+  }, [])
 
   /* Load messages when a user is selected */
   async function handleUserSelect(user) {

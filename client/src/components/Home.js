@@ -1,10 +1,10 @@
 /* Home */
 import React, { useEffect, useState } from "react"
 
-/* Importing Link from react-router-dom */
-import { Link } from "react-router-dom"
+/* Importing Link and useNavigate from react-router-dom */
+import { Link, useNavigate } from "react-router-dom"
 
-/* My Components */
+/* My Component Header */
 import Header from "./Header"
 
 /* Importing a loading spinner */
@@ -14,15 +14,72 @@ import { ClipLoader } from "react-spinners"
 import { useSwipeable } from "react-swipeable"
 
 function Home() {
+  // Initializing the useNavigate for redirecting users
+  const navigate = useNavigate()
+
   /* States */
   const [user, setUser] = useState({}) // Storing the new user
   const [loading, setLoading] = useState(true) // Storing the loading state to whether to display a loading spinner
   const [noUsers, setNoUsers] = useState(false) // Storing whether there are no new users to match with
   const [swipeOffset, setSwipeOffset] = useState(0) // Storing Swipe Offset value to display the movement when swiping on round box
+  const [matchFound, setMatchFound] = useState(false) // Storing whether a match has been found when liking user
+  const [selectedUser, setSelectedUser] = useState(null) // Storing the selected user when a match is found so we can redirect it to messages if user wants to start chatting now
+
+  /* Functions */
+
+  // If the Arrow is clicked when match found is found then redirect to messages
+  function handleNow() {
+    if (selectedUser) {
+      navigate("/messages", { state: { selectedUser } })
+    }
+
+    // If no user.id is found then set match found to false so the message dissappear and you can continue normally
+    else {
+      navigate("/messages")
+    }
+  }
+
+  // If the "X" is clicked when match found is found then set match found to false so the message dissappear and you can continue normally
+  function handleLater() {
+    setMatchFound(false)
+  }
+
+  // Checking if the matched user has liked the current user back
+  async function checkMatch() {
+    try {
+      const res = await fetch(`http://localhost:5000/users/liked/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"), // Sending token in headers
+        },
+      })
+
+      // If response is not ok, reload and remove token
+      if (!res.ok) {
+        localStorage.removeItem("token")
+        window.location.reload()
+      }
+
+      // Getting response json
+      const data = await res.json()
+
+      // If data successes meaning that matched user has liked current user back, update the user state
+      if (data.success) {
+        setMatchFound(true) // Updating the state to display a match has been found
+      }
+
+      // If error occurs display error
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   // Handling liking user
   async function handleLike() {
     try {
+      setLoading(true) // Setting loading true so that there is loading spinner displayed meanwhile trying to find if the liked user has liked you back
+
       console.log(user) // Console logging the user to see if it is being passed correctly
 
       /* Sending PUT request to update the database and add the user to the list of likedUsers */
@@ -45,7 +102,19 @@ function Home() {
 
       console.log(data) // Console logging the data to see if it is being passed correctly
 
-      loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
+      setSelectedUser({
+        _id: user.id,
+        name: user.name,
+        age: user.age,
+        title: user.title,
+        bio: user.bio,
+      }) // Setting the selected user before we load the new user
+
+      await checkMatch() // Checking if the liked user has liked the current user back
+
+      await loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
+
+      setLoading(false) // Set the loading state to false after everything is loaded so that user can continue
 
       // If error occurs display error
     } catch (error) {
@@ -163,6 +232,41 @@ function Home() {
           </div>
         ) : noUsers ? (
           <h3>You have already matched with everyone</h3>
+        ) : matchFound ? (
+          <div>
+            {/* User matching box */}
+            <div className="round-box z-depth-5 red lighten-5">
+              {/* Match found! */}
+              <h3 className="red-text text-lighten-1">Match found!</h3>
+              <div className="divider red lighten-4" />
+
+              {/* Start chatting now? */}
+              <h5 className="red-text text-lighten-2">Start chatting now?</h5>
+              <br />
+              <div>
+                {/* Button with the "close" icon to continue swiping */}
+                <button
+                  className="btn-floating btn-large waves-effect waves-light red lighten-2"
+                  type="button"
+                  onClick={handleLater}
+                >
+                  <i className="material-icons left">close</i>
+                  Pass
+                </button>
+
+                {/* Button with the "send" icon to start chatting now */}
+                <button
+                  className="btn-floating btn-large waves-effect waves-light green lighten-2"
+                  type="button"
+                  onClick={handleNow}
+                  style={{ marginLeft: "5vw" }}
+                >
+                  <i className="material-icons left">send</i>
+                  Now
+                </button>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="content-container">
             <div

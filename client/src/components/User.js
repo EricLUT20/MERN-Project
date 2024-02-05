@@ -91,9 +91,7 @@ function User() {
             </div>
             <div className="divider" />
             <div className="section container">
-              <h4 className="header red-text text-lighten-2">
-                {user.name}'s Bio
-              </h4>
+              <h4 className="header red-text text-lighten-2">Title & Bio</h4>
               <p className="flow-text">{user.title}</p>
               <p>{user.bio}</p>
             </div>

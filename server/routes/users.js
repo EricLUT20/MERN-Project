@@ -306,7 +306,7 @@ router.get("/matches", ValidateToken, async function (req, res, next) {
   }
 })
 
-// Getting other user's profile
+// GET route to Getting other user's profile
 router.get("/:id", ValidateToken, async function (req, res, next) {
   try {
     // Get the user from the database using the id from the ValidateToken middleware
@@ -329,6 +329,33 @@ router.get("/:id", ValidateToken, async function (req, res, next) {
     })
 
     // If error occurs respond success false with an error message
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Something went wrong" })
+  }
+})
+
+// GET route to checking if a user has liked the current user
+router.get("/liked/:id", ValidateToken, async function (req, res, next) {
+  try {
+    // Get the user from the database using the id from the ValidateToken middleware
+    const user = await User.findById(req.params.id)
+
+    // Check if the user has liked the current user
+    if (user.likedUsers.includes(req.user)) {
+      return res
+        .status(200)
+        .json({ success: true, message: "User has liked the current user" })
+    }
+
+    // If the user has not liked the current user respond with a false and an according message
+    else {
+      return res.status(200).json({
+        success: false,
+        message: "User has not liked the current user",
+      })
+    }
+
+    // If error occurs respond with an error message
   } catch (error) {
     res.status(500).json({ success: false, message: "Something went wrong" })
   }

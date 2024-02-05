@@ -8,7 +8,6 @@ function Header() {
   const handleLogout = async () => {
     try {
       await logout()
-      window.location.reload() // Reload the page to update localStorage
     } catch (error) {
       console.error(error)
     }
