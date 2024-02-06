@@ -90,7 +90,7 @@ code {
 /* Messages container where all the message bubbles are stored */
 .messages-container {
   overflow-y: auto;
-  height: 30vw;
+  height: 25vw;
   min-height: 300px;
   display: flex;
   flex-direction: column;

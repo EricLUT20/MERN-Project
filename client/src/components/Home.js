@@ -40,8 +40,10 @@ function Home() {
   }
 
   // If the "X" is clicked when match found is found then set match found to false so the message dissappear and you can continue normally
-  function handleLater() {
+  async function handleLater() {
+    setLoading(true)
     setMatchFound(false)
+    await loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
   }
 
   // Checking if the matched user has liked the current user back
@@ -67,6 +69,8 @@ function Home() {
       // If data successes meaning that matched user has liked current user back, update the user state
       if (data.success) {
         setMatchFound(true) // Updating the state to display a match has been found
+      } else {
+        await loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
       }
 
       // If error occurs display error
@@ -111,8 +115,6 @@ function Home() {
       }) // Setting the selected user before we load the new user
 
       await checkMatch() // Checking if the liked user has liked the current user back
-
-      await loadUserId() // Loading all of the new users again so we can display it for the current user to decide on (like or pass)
 
       setLoading(false) // Set the loading state to false after everything is loaded so that user can continue
 
