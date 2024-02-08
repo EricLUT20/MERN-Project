@@ -225,7 +225,9 @@ function Messages() {
                   onClick={() => setCurrentPage(number)}
                   style={{ cursor: "pointer" }}
                 >
-                  <a>{number}</a>
+                  <a href={`#${number}`} role="button">
+                    {number}
+                  </a>
                 </li>
               ))}
             </ul>

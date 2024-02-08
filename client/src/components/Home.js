@@ -220,7 +220,7 @@ function Home() {
   })
 
   return (
-    <div {...swipeHandlers}>
+    <div>
       {/* Getting Materialize Icons for the Buttons */}
       <link
         href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -274,6 +274,7 @@ function Home() {
             <div
               className="round-box z-depth-5 red lighten-5"
               style={{ transform: `translateX(${swipeOffset}px)` }}
+              {...swipeHandlers}
             >
               <h3>
                 <Link
