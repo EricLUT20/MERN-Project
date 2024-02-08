@@ -21,6 +21,7 @@ function Messages() {
   const [loading, setLoading] = useState(true) // State for Storing Loading spinner boolean
   const [newMessage, setNewMessage] = useState("") // State for Storing Input values for sending
   const [currentPage, setCurrentPage] = useState(1) // State for Storing current page state
+  const [filtered, setFiltered] = useState(false) // State for Storing the filtered state
 
   /* Setting up the reference to the messages container */
   const messagesContainerRef = useRef(null)
@@ -84,6 +85,8 @@ function Messages() {
       // Update the messages state with the fetched data
       setMessages(data.messages || [])
 
+      setFiltered(false) // Removing the filtered state to remove the "Remove filter" button
+
       // If error occurs display error
     } catch (error) {
       console.error(error)
@@ -134,6 +137,15 @@ function Messages() {
     }
   }
 
+  // Filter message
+  function filterMessage() {
+    const filteredMessages = messages.filter((message) => {
+      return message.message.toLowerCase().includes(newMessage.toLowerCase())
+    })
+    setMessages(filteredMessages) // Update the messages state with the filtered data
+    setFiltered(true) // Set the filtered state to true to display the "Remove filter" button
+  }
+
   /* Load messages and matched users when the component mounts */
   useEffect(() => {
     // If location state has a selected user, set it as the selected user
@@ -150,7 +162,7 @@ function Messages() {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight
     }
-  }, [])
+  }, [location.state?.selectedUser])
 
   /* Load messages when a user is selected */
   async function handleUserSelect(user) {
@@ -266,13 +278,36 @@ function Messages() {
                     onChange={(e) => setNewMessage(e.target.value)}
                   />
 
-                  {/* Display send button */}
-                  <button
-                    className="btn waves-effect waves-light red lighten-2"
-                    onClick={sendMessage}
-                  >
-                    Send
-                  </button>
+                  {!filtered ? (
+                    <div>
+                      {/* Display send button */}
+                      <button
+                        className="btn waves-effect waves-light red lighten-2"
+                        onClick={sendMessage}
+                      >
+                        Send
+                      </button>
+
+                      {/* Display filter button */}
+                      <button
+                        className="btn waves-effect waves-light green lighten-2"
+                        onClick={filterMessage}
+                        style={{ marginLeft: "2vw" }}
+                      >
+                        Filter
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* Display filter button */}
+                      <button
+                        className="btn waves-effect waves-light red lighten-1"
+                        onClick={() => loadUserMessages(selectedUser._id)} // Load messages for the selected user
+                      >
+                        Remove Filter
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
