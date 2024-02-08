@@ -181,16 +181,6 @@ function Messages() {
   const indexOfFirstItem = indexOfLastItem - 10
   const currentChats = matchedUsers.slice(indexOfFirstItem, indexOfLastItem)
 
-  const renderChatList = currentChats.map((user) => (
-    <li
-      key={user._id}
-      className="collection-item clickable"
-      onClick={() => handleUserSelect(user)}
-    >
-      {user.name}
-    </li>
-  ))
-
   const pageNumbers = Array.from(
     { length: Math.ceil(matchedUsers.length / 10) },
     (_, index) => index + 1
@@ -214,7 +204,17 @@ function Messages() {
             <h4>Chats</h4>
 
             {/* Display user matches */}
-            <ul className="collection">{renderChatList}</ul>
+            <ul className="collection">
+              {currentChats.map((user) => (
+                <li
+                  key={user._id}
+                  className="collection-item clickable"
+                  onClick={() => handleUserSelect(user)}
+                >
+                  {user.name}
+                </li>
+              ))}
+            </ul>
 
             {/* Display pages */}
             <ul className="pagination">
@@ -275,7 +275,7 @@ function Messages() {
                 <div className="message-input">
                   <input
                     type="text"
-                    placeholder="Type a message..."
+                    placeholder="Type a message... (or filter keyword)"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                   />
