@@ -7,7 +7,6 @@ import { ClipLoader } from "react-spinners"
 
 function Profile() {
   /* States */
-  const [profilePicture, setProfilePicture] = useState("") // Storing user's profile picture
   const [name, setName] = useState("") // Storing user's name
   const [title, setTitle] = useState("") // Storing user's title
   const [bio, setBio] = useState("") // Storing user's bio
@@ -15,12 +14,6 @@ function Profile() {
   const [loading, setLoading] = useState(true) // Storing loading state to display loading spinner while fetching data
 
   const maxCharacterCount = 1000 // Maximum character count variable
-
-  /* Updating profile picture */
-  const handleProfilePictureChange = (e) => {
-    const file = e.target.files[0]
-    setProfilePicture(file ? file.name : "")
-  }
 
   /* Updating changes in user's bio */
   const handleBioChange = (e) => {
@@ -123,26 +116,6 @@ function Profile() {
           {/* Editing Profile Form */}
           <h2 className="col s12">Edit Profile</h2>
           <form className="col s12" onSubmit={handleSubmit}>
-            {/* Profile Picture Upload Input */}
-            <div className="file-field input-field col s12">
-              <div className="btn">
-                <span>Upload Profile Picture</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                />
-              </div>
-              <div className="file-path">
-                <input
-                  type="text"
-                  placeholder="Choose a profile picture"
-                  value={profilePicture}
-                  readOnly
-                />
-              </div>
-            </div>
-
             {/* Name Input */}
             <div className="input-field col s12">
               <input
@@ -174,9 +147,11 @@ function Profile() {
               <textarea
                 id="bio"
                 className="materialize-textarea"
+                type="text"
                 data-length={maxCharacterCount}
                 value={bio}
                 onChange={handleBioChange}
+                style={{ resize: "vertical", height: "10vw" }}
               ></textarea>
               <label className={bio ? "active" : ""} htmlFor="bio">
                 Bio (Max {maxCharacterCount} characters)

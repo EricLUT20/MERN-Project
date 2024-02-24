@@ -17,43 +17,43 @@ function User() {
 
   const { userId } = useParams() // Getting the userId from the URL
 
-  /* Load user data */
-  async function loadUserData() {
-    try {
-      // GET request to load user data
-      const res = await fetch(`http://localhost:5000/users/${userId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      })
-
-      // If response is not ok, reload and remove token
-      if (!res.ok) {
-        localStorage.removeItem("token")
-        window.location.reload()
-      }
-
-      // Getting response json
-      const data = await res.json()
-
-      // Update the user state with the fetched data
-      setUser(data.user)
-
-      // Set loading to false so the data is displayed after it is loaded
-      setLoading(false)
-
-      // If error occurs display error
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   /* When the component mounts check if the  */
   useEffect(() => {
-    loadUserData()
-  }, [])
+    /* Load user data */
+    async function loadUserData() {
+      try {
+        // GET request to load user data
+        const res = await fetch(`http://localhost:5000/users/${userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+
+        // If response is not ok, reload and remove token
+        if (!res.ok) {
+          localStorage.removeItem("token")
+          window.location.reload()
+        }
+
+        // Getting response json
+        const data = await res.json()
+
+        // Update the user state with the fetched data
+        setUser(data.user)
+
+        // Set loading to false so the data is displayed after it is loaded
+        setLoading(false)
+
+        // If error occurs display error
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadUserData() // Loaading the user data to display on page
+  }, [userId])
 
   /* Formatting the timestamp in more reasonable format */
   function formatTimestamp(timestamp) {

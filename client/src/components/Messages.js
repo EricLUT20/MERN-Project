@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useRef } from "react"
 
 /* Importing useLocation from react-router-dom */
-import { useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom" // Importing useLocation to get states from previous pages
+import { Link } from "react-router-dom" // Importing Link to add a link to user's profile
 
 /* My components Header */
 import Header from "../components/Header"
@@ -148,21 +149,23 @@ function Messages() {
 
   /* Load messages and matched users when the component mounts */
   useEffect(() => {
+    // Load messages
+    loadMatches()
+
     // If location state has a selected user, set it as the selected user
     if (location.state?.selectedUser) {
       setSelectedUser(location.state.selectedUser)
       loadUserMessages(location.state.selectedUser._id) // Load messages for the selected user
     }
+  }, [location.state?.selectedUser])
 
-    // Load messages
-    loadMatches()
-
-    // Scroll to the bottom of messages when a new message is sent
+  // Scroll to the bottom of messages when the messages state is updated
+  useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight
     }
-  }, [location.state?.selectedUser])
+  }, [messages])
 
   /* Load messages when a user is selected */
   async function handleUserSelect(user) {
@@ -238,8 +241,12 @@ function Messages() {
             {/* If a user is selected display selected user's name and messages */}
             {selectedUser ? (
               <div>
-                {/* Display selected user's name */}
-                <h2>{selectedUser.name}'s Chat</h2>
+                {/* Display selected user's name and link it to user's profile */}
+                <h2>
+                  <Link className="link" to={`/user/${selectedUser._id}`}>
+                    {selectedUser.name}'s Chat
+                  </Link>
+                </h2>
 
                 {/* Display selected user's messages */}
                 <div className="messages-container" ref={messagesContainerRef}>
